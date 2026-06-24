@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { TripResponse } from "@/types/trip";
 
 export const travelStyles = [
   "Relaxed",
@@ -45,17 +46,82 @@ export const tripPlannerSchema = z.object({
 
 export type TripPlannerValues = z.infer<typeof tripPlannerSchema>;
 
-export type GeneratedTrip = {
-  id: string;
-  destination: string;
-  title: string;
-  summary: string;
-  dailyBudget: number;
-  highlights: string[];
-  days: Array<{
-    day: number;
-    title: string;
-    description: string;
-    accent: string;
-  }>;
-};
+const itineraryPeriodSchema = z.object({
+  title: z.string().min(1),
+  description: z.string().min(1),
+  location: z.string().min(1),
+  estimatedCost: z.number().nonnegative(),
+});
+
+export const tripResponseSchema: z.ZodType<TripResponse> = z.object({
+  tripOverview: z.object({
+    title: z.string().min(1),
+    destination: z.string().min(1),
+    duration: z.string().min(1),
+    travelStyle: z.string().min(1),
+    summary: z.string().min(1),
+    bestTimeToVisit: z.string().min(1),
+    estimatedTotalCost: z.number().nonnegative(),
+    currency: z.string().length(3),
+  }),
+  dailyItinerary: z
+    .array(
+      z.object({
+        day: z.number().int().positive(),
+        title: z.string().min(1),
+        theme: z.string().min(1),
+        morning: itineraryPeriodSchema,
+        afternoon: itineraryPeriodSchema,
+        evening: itineraryPeriodSchema,
+        estimatedDailyCost: z.number().nonnegative(),
+        localTip: z.string().min(1),
+      }),
+    )
+    .min(1)
+    .max(60),
+  budgetBreakdown: z.object({
+    currency: z.string().length(3),
+    total: z.number().nonnegative(),
+    accommodation: z.number().nonnegative(),
+    food: z.number().nonnegative(),
+    localTransport: z.number().nonnegative(),
+    activities: z.number().nonnegative(),
+    contingency: z.number().nonnegative(),
+    notes: z.array(z.string()).max(8),
+  }),
+  hotelRecommendations: z
+    .array(
+      z.object({
+        name: z.string().min(1),
+        area: z.string().min(1),
+        priceRange: z.string().min(1),
+        description: z.string().min(1),
+        whyItFits: z.string().min(1),
+      }),
+    )
+    .min(1)
+    .max(6),
+  restaurantRecommendations: z
+    .array(
+      z.object({
+        name: z.string().min(1),
+        cuisine: z.string().min(1),
+        area: z.string().min(1),
+        priceRange: z.string().min(1),
+        description: z.string().min(1),
+      }),
+    )
+    .min(1)
+    .max(8),
+  packingChecklist: z.object({
+    essentials: z.array(z.string()).min(1).max(20),
+    clothing: z.array(z.string()).min(1).max(20),
+    destinationSpecific: z.array(z.string()).min(1).max(20),
+  }),
+  travelTips: z.object({
+    gettingAround: z.array(z.string()).min(1).max(10),
+    localEtiquette: z.array(z.string()).min(1).max(10),
+    safety: z.array(z.string()).min(1).max(10),
+    money: z.array(z.string()).min(1).max(10),
+  }),
+});

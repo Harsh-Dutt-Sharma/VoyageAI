@@ -1,54 +1,132 @@
 import { NextResponse } from "next/server";
-import { tripPlannerSchema, type GeneratedTrip } from "@/lib/trip-planner-schema";
+import { tripPlannerSchema } from "@/lib/trip-planner-schema";
+import {
+  FoundryServiceError,
+  generateTripWithFoundry,
+} from "@/services/foundry-service";
+
+export const runtime = "nodejs";
+export const maxDuration = 70;
 
 export async function POST(request: Request) {
-  let body: unknown;
+  const correlationId =
+    request.headers.get("x-request-id") ?? crypto.randomUUID();
+  const startedAt = Date.now();
 
   try {
-    body = await request.json();
-  } catch {
-    return NextResponse.json(
-      { message: "The request body must be valid JSON." },
-      { status: 400 },
+    let body: unknown;
+
+    try {
+      body = await request.json();
+    } catch {
+      return apiError(
+        "INVALID_JSON",
+        "The request body must be valid JSON.",
+        400,
+        correlationId,
+      );
+    }
+
+    const parsed = tripPlannerSchema.safeParse(body);
+    if (!parsed.success) {
+      console.warn(
+        JSON.stringify({
+          level: "warn",
+          event: "trip.validation.failed",
+          correlationId,
+          timestamp: new Date().toISOString(),
+          fields: Object.keys(parsed.error.flatten().fieldErrors),
+        }),
+      );
+
+      return NextResponse.json(
+        {
+          error: {
+            code: "VALIDATION_ERROR",
+            message: "Please check your trip details.",
+            fields: parsed.error.flatten().fieldErrors,
+          },
+          correlationId,
+        },
+        { status: 422 },
+      );
+    }
+
+    const trip = await generateTripWithFoundry(parsed.data, correlationId);
+
+    console.info(
+      JSON.stringify({
+        level: "info",
+        event: "trip.generated",
+        correlationId,
+        durationMs: Date.now() - startedAt,
+        itineraryDays: trip.dailyItinerary.length,
+        timestamp: new Date().toISOString(),
+      }),
     );
-  }
 
-  const parsed = tripPlannerSchema.safeParse(body);
-
-  if (!parsed.success) {
     return NextResponse.json(
+      { data: trip, correlationId },
       {
-        message: "Please check your trip details.",
-        issues: parsed.error.flatten().fieldErrors,
+        status: 200,
+        headers: { "Cache-Control": "no-store" },
       },
-      { status: 422 },
+    );
+  } catch (error) {
+    if (error instanceof FoundryServiceError) {
+      return apiError(
+        error.code,
+        publicErrorMessage(error),
+        error.status,
+        correlationId,
+      );
+    }
+
+    console.error(
+      JSON.stringify({
+        level: "error",
+        event: "trip.generation.unhandled_error",
+        correlationId,
+        durationMs: Date.now() - startedAt,
+        timestamp: new Date().toISOString(),
+      }),
+    );
+
+    return apiError(
+      "INTERNAL_ERROR",
+      "We could not create your trip right now. Please try again.",
+      500,
+      correlationId,
     );
   }
+}
 
-  await new Promise((resolve) => setTimeout(resolve, 1600));
+function publicErrorMessage(error: FoundryServiceError): string {
+  if (error.code === "CONFIGURATION_ERROR") {
+    return "Trip generation is not configured yet. Please contact support.";
+  }
 
-  const { destination, budget, days, travelStyle, interests } = parsed.data;
-  const previewDays = Math.min(days, 3);
-  const dayThemes = [
-    ["Arrive & find your rhythm", "A gentle first look at the neighborhood, a local lunch, and a golden-hour walk."],
-    ["The heart of the place", `A ${travelStyle.toLowerCase()} day shaped around ${interests[0].toLowerCase()} and hidden local favorites.`],
-    ["A little further", `Step beyond the obvious with a day inspired by ${interests[1]?.toLowerCase() ?? interests[0].toLowerCase()}.`],
-  ];
+  if (error.code === "AUTHENTICATION_ERROR") {
+    return "Trip generation is temporarily unavailable. Please contact support.";
+  }
 
-  const trip: GeneratedTrip = {
-    id: crypto.randomUUID(),
-    destination,
-    title: `${days} days in ${destination}`,
-    summary: `A ${travelStyle.toLowerCase()} escape with room for discovery, designed around ${interests.slice(0, 3).join(", ").toLowerCase()}.`,
-    dailyBudget: Math.round(budget / days),
-    highlights: interests.slice(0, 4),
-    days: Array.from({ length: previewDays }, (_, index) => ({
-      day: index + 1,
-      title: dayThemes[index][0],
-      description: dayThemes[index][1],
-      accent: ["bg-coral", "bg-mint", "bg-[#e7c98e]"][index],
-    })),
-  };
+  return error.message;
+}
 
-  return NextResponse.json({ data: trip }, { status: 200 });
+function apiError(
+  code: string,
+  message: string,
+  status: number,
+  correlationId: string,
+) {
+  return NextResponse.json(
+    {
+      error: { code, message },
+      correlationId,
+    },
+    {
+      status,
+      headers: { "Cache-Control": "no-store" },
+    },
+  );
 }

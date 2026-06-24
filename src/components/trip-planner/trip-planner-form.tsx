@@ -12,25 +12,25 @@ import {
   Clock3,
   Compass,
   MapPin,
-  RotateCcw,
   Sparkles,
   WandSparkles,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { TripResults } from "@/components/trip-planner/trip-results";
 import { cn } from "@/lib/utils";
 import {
   interestOptions,
   travelStyles,
   tripPlannerSchema,
-  type GeneratedTrip,
   type TripPlannerValues,
 } from "@/lib/trip-planner-schema";
+import type { TripResponse } from "@/types/trip";
 
 const fieldClass =
   "h-14 w-full rounded-2xl border bg-white px-12 text-[15px] text-ink outline-none transition placeholder:text-ink/30 focus:border-navy focus:ring-4 focus:ring-mint/35";
 
 export function TripPlannerForm() {
-  const [result, setResult] = useState<GeneratedTrip | null>(null);
+  const [result, setResult] = useState<TripResponse | null>(null);
   const [apiError, setApiError] = useState<string | null>(null);
 
   const {
@@ -75,12 +75,15 @@ export function TripPlannerForm() {
       });
 
       const payload = (await response.json()) as {
-        data?: GeneratedTrip;
-        message?: string;
+        data?: TripResponse;
+        error?: { code?: string; message?: string };
+        correlationId?: string;
       };
 
       if (!response.ok || !payload.data) {
-        throw new Error(payload.message ?? "We could not generate your trip.");
+        throw new Error(
+          payload.error?.message ?? "We could not generate your trip.",
+        );
       }
 
       setResult(payload.data);
@@ -306,69 +309,7 @@ export function TripPlannerForm() {
         </aside>
       </div>
 
-      {result && (
-        <section
-          id="trip-result"
-          className="scroll-mt-8 pt-16 transition-all duration-700 animate-[fadeIn_.5s_ease-out]"
-          aria-live="polite"
-        >
-          <div className="mb-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
-            <div>
-              <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[.18em] text-coral">
-                <Check className="size-4" />
-                Your first look
-              </div>
-              <h2 className="font-display mt-3 text-4xl tracking-tight sm:text-5xl">
-                {result.title}
-              </h2>
-              <p className="mt-3 max-w-2xl leading-7 text-ink/55">{result.summary}</p>
-            </div>
-            <button
-              type="button"
-              onClick={startOver}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-ink/10 bg-white px-5 text-sm font-semibold text-ink transition hover:bg-cream"
-            >
-              <RotateCcw className="size-4" />
-              Start over
-            </button>
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-3">
-            {result.days.map((day) => (
-              <article
-                key={day.day}
-                className="group rounded-[1.75rem] border border-ink/[.07] bg-white p-6 shadow-card transition duration-300 hover:-translate-y-1 hover:shadow-soft"
-              >
-                <div className={cn("h-1.5 w-14 rounded-full", day.accent)} />
-                <p className="mt-6 text-xs font-bold uppercase tracking-[.18em] text-ink/35">
-                  Day {day.day}
-                </p>
-                <h3 className="font-display mt-2 text-2xl font-semibold">{day.title}</h3>
-                <p className="mt-3 text-sm leading-6 text-ink/55">{day.description}</p>
-              </article>
-            ))}
-          </div>
-
-          <div className="mt-5 flex flex-col gap-5 rounded-[1.75rem] bg-mint/55 p-6 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[.16em] text-ink/40">
-                Suggested daily budget
-              </p>
-              <p className="font-display mt-1 text-3xl">${result.dailyBudget}</p>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {result.highlights.map((highlight) => (
-                <span key={highlight} className="rounded-full bg-white/75 px-3 py-1.5 text-xs font-semibold text-navy">
-                  {highlight}
-                </span>
-              ))}
-            </div>
-            <button className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-navy px-6 text-sm font-bold text-white transition hover:bg-[#0f3033]">
-              Build full itinerary <ArrowRight className="size-4" />
-            </button>
-          </div>
-        </section>
-      )}
+      {result && <TripResults trip={result} onStartOver={startOver} />}
     </div>
   );
 }
