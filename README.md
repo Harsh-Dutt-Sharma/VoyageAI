@@ -1,36 +1,56 @@
 # ✈️ VoyageAI
 
-> AI-Powered Travel Planning Platform built with Next.js, TypeScript, Tailwind CSS, and Microsoft Foundry.
+> AI-Powered Travel Planning Platform built with Next.js, TypeScript, Tailwind CSS, Microsoft Foundry, and GPT-4o-mini.
 
-VoyageAI helps travelers create personalized travel experiences by generating intelligent itineraries, budget breakdowns, destination recommendations, and travel insights using Generative AI.
+VoyageAI is an intelligent travel planning platform that generates personalized travel itineraries using Generative AI. Users can enter their destination, budget, travel duration, travel style, and interests to receive a complete travel plan including day-wise activities, hotel recommendations, restaurant suggestions, budget breakdowns, packing checklists, and travel tips.
 
 ---
 
 ## 🚀 Features
 
-### Current Features
+### ✅ Implemented Features
 
+* AI-Powered Travel Itinerary Generation
+* Microsoft Foundry Integration
+* GPT-4o-mini Integration
+* Dynamic Day-wise Travel Planning
+* Budget Breakdown Analysis
+* Hotel Recommendations
+* Restaurant Recommendations
+* Packing Checklist Generation
+* Travel Tips & Local Guidance
 * Modern Landing Page
 * Interactive Dashboard
 * Trip Planner Form
-* Form Validation using React Hook Form & Zod
-* Responsive UI Design
+* React Hook Form Validation
+* Zod Schema Validation
 * TypeScript Support
-* API Integration Architecture
-* GitHub Version Control
+* Responsive UI Design
+* Secure Environment Variable Configuration
+* Production-Ready API Architecture
 
-### Upcoming Features
+---
 
-* Microsoft Foundry AI Integration
-* AI-Powered Itinerary Generation
-* Live Weather Intelligence
-* Budget Optimization
-* Destination Comparison
-* Trip History
-* PDF Travel Reports
-* Travel Analytics Dashboard
-* Knowledge Base (RAG)
-* Agentic Travel Assistant
+## 🧠 AI Capabilities
+
+VoyageAI uses Microsoft Foundry and GPT-4o-mini to generate:
+
+* Personalized Travel Plans
+* Day-by-Day Itineraries
+* Budget Recommendations
+* Hotel Suggestions
+* Restaurant Recommendations
+* Travel Tips
+* Packing Checklists
+* Local Guidance
+
+The AI adapts responses based on:
+
+* Destination
+* Budget
+* Travel Duration
+* Travel Style
+* User Interests
 
 ---
 
@@ -38,8 +58,8 @@ VoyageAI helps travelers create personalized travel experiences by generating in
 
 ### Frontend
 
-* Next.js
-* React
+* Next.js 15
+* React 19
 * TypeScript
 * Tailwind CSS
 * React Hook Form
@@ -47,62 +67,107 @@ VoyageAI helps travelers create personalized travel experiences by generating in
 
 ### Backend
 
-* Node.js
-* API Routes
+* Next.js API Routes
+* TypeScript
 
-### AI
+### AI & Cloud
 
 * Microsoft Foundry
-* GPT Models
+* GPT-4o-mini
+* REST API Integration
 
-### Database (Planned)
+### Development Tools
+
+* Git
+* GitHub
+* VS Code
+
+### Planned Integrations
 
 * MongoDB
-
-### Additional Integrations (Planned)
-
-* Weather API
-* PDF Generation
-* Vector Database for RAG
+* OpenWeather API
+* PDF Export
+* Vector Database (RAG)
 
 ---
 
-## 📸 Project Preview
+## 📸 Project Workflow
 
-### Landing Page
-
-Professional travel-focused landing page with modern UI and responsive design.
-
-### Dashboard
-
-Interactive dashboard for planning and managing trips.
-
-### Trip Planner
-
-Users can specify:
-
-* Destination
-* Budget
-* Number of Days
-* Travel Style
-* Interests
-
-to generate personalized travel plans.
+```text
+User Input
+     ↓
+Trip Planner Form
+     ↓
+Validation (React Hook Form + Zod)
+     ↓
+API Route
+     ↓
+Microsoft Foundry
+     ↓
+GPT-4o-mini
+     ↓
+Structured Travel Plan
+     ↓
+VoyageAI Results Dashboard
+```
 
 ---
 
-## 🏗️ Project Structure
+## ✨ Generated Travel Plan Includes
+
+### Travel Overview
+
+* Destination Summary
+* Best Time to Visit
+* Estimated Budget
+* Travel Style Overview
+
+### Day-Wise Itinerary
+
+* Morning Activities
+* Afternoon Activities
+* Evening Activities
+* Local Tips
+* Estimated Daily Cost
+
+### Budget Analysis
+
+* Accommodation Cost
+* Food Cost
+* Transportation Cost
+* Activities Cost
+* Total Estimated Budget
+
+### Recommendations
+
+* Hotels
+* Restaurants
+* Local Experiences
+
+### Travel Preparation
+
+* Packing Checklist
+* Safety Tips
+* Transportation Advice
+* Local Etiquette
+
+---
+
+## 📂 Project Structure
 
 ```text
 src/
 ├── app/
+│   └── api/
+│       └── generate-trip/
 ├── components/
 │   ├── landing/
 │   ├── trip-planner/
 │   └── ui/
-├── lib/
-├── hooks/
 ├── services/
+│   └── foundry-service.ts
+├── types/
+├── lib/
 └── utils/
 ```
 
@@ -116,7 +181,7 @@ Clone the repository:
 git clone https://github.com/Harsh-Dutt-Sharma/VoyageAI.git
 ```
 
-Navigate into the project:
+Navigate to the project:
 
 ```bash
 cd VoyageAI
@@ -128,7 +193,7 @@ Install dependencies:
 npm install
 ```
 
-Run development server:
+Run the development server:
 
 ```bash
 npm run dev
@@ -144,7 +209,7 @@ http://localhost:3000
 
 ## 🔑 Environment Variables
 
-Create a `.env.local` file:
+Create a `.env.local` file in the project root:
 
 ```env
 FOUNDRY_ENDPOINT=
@@ -152,29 +217,31 @@ FOUNDRY_API_KEY=
 FOUNDRY_DEPLOYMENT_NAME=
 ```
 
-These values will be configured once Microsoft Foundry integration is completed.
+These values are required for Microsoft Foundry integration and AI itinerary generation.
 
 ---
 
-## 🎯 Project Roadmap
+## 🎯 Roadmap
 
 ### Phase 1 ✅
 
 * Landing Page
 * Dashboard
 * Trip Planner
-* Validation
+* Form Validation
 
-### Phase 2 🚧
+### Phase 2 ✅
 
 * Microsoft Foundry Integration
+* GPT-4o-mini Integration
 * AI Itinerary Generation
+* Structured Response Validation
 
-### Phase 3 📅
+### Phase 3 🚧
 
 * Weather Intelligence
-* Budget Analysis
-* Destination Recommendations
+* Destination Insights
+* Budget Optimization
 
 ### Phase 4 📅
 
@@ -184,37 +251,56 @@ These values will be configured once Microsoft Foundry integration is completed.
 
 ### Phase 5 📅
 
+* PDF Export
 * RAG Knowledge Base
 * Agentic Travel Assistant
 
 ---
 
-## 📚 Learning Objectives
+## 📚 Learning Outcomes
 
-This project is being developed to explore:
+This project explores:
 
 * Full Stack Development
-* AI Application Development
+* Generative AI Applications
 * Microsoft Foundry
 * Prompt Engineering
-* Retrieval-Augmented Generation (RAG)
-* Agentic AI Systems
+* TypeScript Development
+* API Design
+* AI Response Validation
 * Modern Frontend Architecture
+* Production-Ready Project Structure
 
 ---
 
 ## 👨‍💻 Author
 
-**Harsh Dutt Sharma**
+### Harsh Dutt Sharma
 
 B.Tech (AI & Data Science)
 
-Passionate about AI, Machine Learning, Full Stack Development, and Generative AI Applications.
+Passionate about:
 
-GitHub: https://github.com/Harsh-Dutt-Sharma
+* Artificial Intelligence
+* Machine Learning
+* Full Stack Development
+* Generative AI
+* Agentic AI Systems
+
+GitHub:
+https://github.com/Harsh-Dutt-Sharma
 
 ---
 
 ## ⭐ Future Vision
 
-VoyageAI aims to evolve into a complete AI Travel Intelligence Platform capable of planning, optimizing, and personalizing travel experiences using advanced AI systems and real-time data.
+VoyageAI aims to evolve into a complete AI Travel Intelligence Platform capable of:
+
+* Personalized Travel Planning
+* Real-Time Weather Intelligence
+* Saved Travel Histories
+* Destination Knowledge Retrieval
+* AI Travel Assistants
+* End-to-End Travel Decision Support
+
+The long-term goal is to combine Generative AI, RAG, and Agentic Workflows into a single intelligent travel companion.
