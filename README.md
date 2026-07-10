@@ -304,3 +304,5 @@ VoyageAI aims to evolve into a complete AI Travel Intelligence Platform capable 
 * End-to-End Travel Decision Support
 
 The long-term goal is to combine Generative AI, RAG, and Agentic Workflows into a single intelligent travel companion.
+
+This project will be completed soon a major update is coming soon....
